@@ -187,8 +187,9 @@ def game_phase(client_socket, data):
             if double_button.handle_event(event):
                 client_socket.sendall("double button clicked".encode())
                 card_data = client_socket.recv(1024).decode()
-                read_data(card_data)
-                waiting_for_results_phase(client_socket)  
+                if card_data != "you are brokie":
+                    read_data(card_data)
+                    waiting_for_results_phase(client_socket)
 
         window.fill(GREEN)
         window.blit(dealer_image, (500,80))
@@ -250,7 +251,8 @@ def result_phase(client_socket, data):
         dealer_chat.change_text("Better luck next time XD")
         dealer_chat.draw(window)
         player_name.draw(window)
-        play_again_button.draw(window)
+        if data.split("|")[1] != "0":
+            play_again_button.draw(window)
         pygame.display.flip()
 
 

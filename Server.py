@@ -99,7 +99,7 @@ def handle_client(client_socket, client_address):
                         sleep(1)
                     end_game(curr_player)
                 else:
-                    client_socket.sendall("no more".encode())      
+                    client_socket.sendall("you are brokie".encode())      
         print(f"Received from client {client_address}: {data}")
     # Close the connection   
     players.remove(curr_player)
