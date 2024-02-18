@@ -41,9 +41,6 @@ def handle_client(client_socket, client_address):
             else:
                 client_data = str(curr_player.money)
                 client_socket.sendall(client_data.encode())
-                while not all(player.bet_value is not None for player in players):
-                    client_socket.sendall("waiting".encode())
-                    sleep(1)
                 start_game(curr_player)
         if data == "bet100 button clicked":
             if curr_player.bet(100) is False:
@@ -52,9 +49,6 @@ def handle_client(client_socket, client_address):
             else:
                 client_data = str(curr_player.money)
                 client_socket.sendall(client_data.encode())
-                while not all(player.bet_value is not None for player in players):
-                    client_socket.sendall("waiting".encode())
-                    sleep(1)
                 start_game(curr_player)
         if data == "betall button clicked":
             if curr_player.bet(curr_player.money) is False:
@@ -63,9 +57,6 @@ def handle_client(client_socket, client_address):
             else:
                 client_data = str(curr_player.money)
                 client_socket.sendall(client_data.encode())
-                while not all(player.bet_value is not None for player in players):
-                    client_socket.sendall("waiting".encode())
-                    sleep(1)
                 start_game(curr_player)
         if data == "hit button clicked":
                 dealer.deal_one_card(curr_player)
@@ -74,9 +65,6 @@ def handle_client(client_socket, client_address):
                 if curr_player.hit_option() is False:
                     curr_player.stay_option()
                     client_socket.sendall("no".encode())
-                    while not all(player.is_ready is not False for player in players):
-                        client_socket.sendall("waiting".encode())
-                        sleep(1)
                     end_game(curr_player)
                 else:
                     client_socket.sendall("yes".encode())
@@ -84,9 +72,6 @@ def handle_client(client_socket, client_address):
                 curr_player.stay_option()
                 card_data = make_card_data()
                 client_socket.sendall(card_data.encode())
-                while not all(player.is_ready is not False for player in players):
-                        client_socket.sendall("waiting".encode())
-                        sleep(1)
                 end_game(curr_player)
         if data == "double button clicked":
                 if curr_player.double_option() is True:
@@ -94,9 +79,6 @@ def handle_client(client_socket, client_address):
                     curr_player.stay_option()
                     card_data = make_card_data()
                     client_socket.sendall(card_data.encode())
-                    while not all(player.is_ready is not False for player in players):
-                        client_socket.sendall("waiting".encode())
-                        sleep(1)
                     end_game(curr_player)
                 else:
                     client_socket.sendall("you are brokie".encode())      
@@ -111,6 +93,7 @@ def start_game(curr_player):
         dealer.new_deck()
         dealer.players = players
         dealer.deal_cards()
+    if all(player.bet_value is not None for player in players):
         data = make_card_data()
         for player in dealer.players:
             player.socket.sendall(data.encode())   
@@ -118,7 +101,8 @@ def start_game(curr_player):
 def end_game(curr_player):
     if players[0] == curr_player:
         dealer.hit()
-        dealer.pay_player()
+        dealer.pay_player()      
+    if all(player.is_ready is not False for player in players):
         card_data = make_card_data()
         for player in players:
             data = card_data + "|" + str(player.money)

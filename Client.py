@@ -67,6 +67,7 @@ def connecting_phase():
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
     client_socket.connect((HOST, PORT)) 
+    client_socket.settimeout(2)
     data = client_socket.recv(1024).decode()
     print(data)
     if data == "server is full":
@@ -158,11 +159,11 @@ def waiting_for_all_bets_phase(client_socket):
         dealer_chat.draw(window)
         player_name.draw(window)
         pygame.display.flip()
-        data = "waiting"
-        data = client_socket.recv(1024).decode()
-        print(data)
-        if data != "waiting":
-            game_phase(client_socket, data)    
+        try:
+            data = client_socket.recv(1024).decode()
+        except:
+            continue
+        game_phase(client_socket, data)    
 
 def game_phase(client_socket, data):
     read_data(data)
@@ -225,10 +226,11 @@ def waiting_for_results_phase(client_socket):
         dealer_chat.draw(window)
         player_name.draw(window)
         pygame.display.flip()
-        data = "waiting"
-        data = client_socket.recv(1024).decode()
-        if data != "waiting":
-            result_phase(client_socket, data)
+        try:
+            data = client_socket.recv(1024).decode()
+        except:
+            continue
+        result_phase(client_socket, data)
 
 def result_phase(client_socket, data):
     while True:
